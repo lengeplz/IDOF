@@ -1,12 +1,14 @@
 import numpy as np
+from dataclasses import dataclass, field
 import os
 from pathlib import Path
+from main import Item_Stats
 
 
 
-def dim_val_met(cost_item, lifespan, days_held, perc_work):
+def dim_val_met(cost_item, lifespan, days_held, perc_work, item_instance: Item_Stats):
 
-    results 
+    
     calc_dim_val = 0
     fis_start_early = 0
     if days_held == 365 or days_held ==  366:
@@ -33,9 +35,12 @@ def dim_val_met(cost_item, lifespan, days_held, perc_work):
 
         if year == 0:
             print(f"Year 0, Day {days_held} deduction: {dim_val:.2f}")
+            
 
         else:
             print(f"Year {year} deduction: {dim_val:.2f}")
+        
+        item_instance.dep_amount.append(dim_val)
 
         
         
