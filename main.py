@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-
+import datetime
+import calendar
 from pathlib import Path
 
 @dataclass
@@ -27,7 +28,28 @@ def main():
         perc_work = float(input("\nEnter (%) used for work: "))
         perc_work = perc_work / 100
         year_bought = int(input("\nYear bought: "))
-        days_held = int(input("\nHow many days held: "))
+        
+        while True:
+            days_held = int(input("\nHow many days held: "))
+
+            if days_held > 366 and not calendar.isleap(year_bought): 
+                print(f"\nWoahhhh... That's a lot of days in a year :?, Try again. P.S there are {366 if calendar.isleap(year_bought) else 365} days in {year_bought}")
+                continue
+
+            elif days_held == 366 and not calendar.isleap(year_bought):
+                print(f"\n{year_bought} is not a leap year... P.S there are {366 if calendar.isleap(year_bought) else 365} days in {year_bought}")
+                continue
+            
+            elif days_held > 366 and calendar.isleap(year_bought):
+                print(f"\n{year_bought} is not a leap year... P.S there are {366 if calendar.isleap(year_bought) else 365} days in {year_bought}")
+                continue
+            
+            else:
+                break
+
+
+
+
 
         
         item_instance = Item_Stats(

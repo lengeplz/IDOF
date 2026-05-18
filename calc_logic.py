@@ -16,7 +16,7 @@ def dim_val_met(cost_item, lifespan, days_held, perc_work, item_instance: Item_S
         bo_fis_start_early = True
 
     asset_cost = cost_item * perc_work
-    stop_year = lifespan if fis_start_early else lifespan + 1
+    stop_year = lifespan + 1 if fis_start_early else lifespan + 1
     for year in range(0 + fis_start_early, stop_year, 1):
 
         if not calc_dim_val:
@@ -34,11 +34,11 @@ def dim_val_met(cost_item, lifespan, days_held, perc_work, item_instance: Item_S
             asset_cost = asset_cost - dim_val
 
         if year == 0:
-            print(f"Year 0, Day {days_held} deduction: {dim_val:.2f}")
+            print(f"Year 0, Day {days_held} deduction: ${dim_val:.2f}")
             
 
         else:
-            print(f"Year {year} deduction: {dim_val:.2f}")
+            print(f"Year {year} deduction: ${dim_val:.2f}")
         
         item_instance.dep_amount.append(dim_val)
 
