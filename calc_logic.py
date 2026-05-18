@@ -6,7 +6,7 @@ from pathlib import Path
 
 def dim_val_met(cost_item, lifespan, days_held, perc_work):
 
-    results
+    results 
     calc_dim_val = 0
     fis_start_early = 0
     if days_held == 365 or days_held ==  366:
