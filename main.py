@@ -28,7 +28,7 @@ def main():
         perc_work = float(input("\nEnter (%) used for work: "))
         perc_work = perc_work / 100
         year_bought = int(input("\nYear bought: "))
-        
+
         while True:
             days_held = int(input("\nHow many days held: "))
 
@@ -65,7 +65,7 @@ def main():
         item_dic[item_name] = item_instance
         data_list.append(item_instance)
 
-        print(data_list[0])
+        print(f"\n{data_list[0]}")
         
         
         
