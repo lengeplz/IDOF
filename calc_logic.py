@@ -6,11 +6,40 @@ from pathlib import Path
 
 def dim_val_met(cost_item, lifespan, days_held, perc_work):
 
-    fis_start_late = 1
+    calc_dim_val = 0
+    fis_start_early = 0
     if days_held == 365 or days_held ==  366:
-        fis_start_late = 0
+        fis_start_early = 1
+        bo_fis_start_early = True
 
     asset_cost = cost_item * perc_work
-    for i in range(0, lifespan + fis_start_late, 1):
+    stop_year = lifespan if fis_start_early else lifespan + 1
+    for year in range(0 + fis_start_early, stop_year, 1):
+
+        if not calc_dim_val:
+            if year == 0:
+                dim_val = float(asset_cost * (days_held / 365) * (2 / lifespan))
+                calc_dim_val = True
+                asset_cost = asset_cost - dim_val
+            else:
+                dim_val = float(asset_cost * (365 / 365) * (2 / lifespan))
+                asset_cost = asset_cost - dim_val
+                calc_dim_val = True
+        
+        else:
+            dim_val = float(asset_cost * (365 / 365) * (2 / lifespan))
+            asset_cost = asset_cost - dim_val
+
+        if year == 0:
+            print(f"Year 0, Day {days_held} deduction: {dim_val:.2f}")
+
+        else:
+            print(f"Year {year} deduction: {dim_val:.2f}")
 
         
+        
+
+
+
+if __name__ == "__main__":
+    dim_val_met(1256, 10, 187, 1)
