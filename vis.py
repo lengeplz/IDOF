@@ -1,21 +1,25 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QLineEdit, QWidget
 from PyQt6.QtGui import QPixmap, QImage
-from PyQt6.QtCore import Qt
+from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
+from PyQt6.QtCore import Qt, QUrl
 from PIL import Image, ImageFilter
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("IDOF")
-        
+        self.music_player = QMediaPlayer()
+        self.audio_output = QAudioOutput()
+        self.music_player.setAudioOutput(self.audio_output)
         screen = QApplication.primaryScreen()
         screen_geometry = screen.geometry()
         self.screen_width = int(screen_geometry.width() / 2)
         self.screen_height = int(screen_geometry.height() / 2)
         self.setGeometry(0, 0, self.screen_width, self.screen_height)
         self.setMinimumSize(400, 300)  # Set minimum size to prevent too small window
-
+        self.music_player.setSource(QUrl.fromLocalFile("meow.mp3"))
+        self.music_player.play()
         self.show_enter_menu()
         
     def resizeEvent(self, event):
@@ -34,6 +38,11 @@ class MainWindow(QMainWindow):
     """
     BEGIN SCREEN!
     """
+    def show_loading_menu(self):
+        self.current_menu = 'loading'
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+
     def show_enter_menu(self):
 
         # lame stuff
@@ -51,7 +60,7 @@ class MainWindow(QMainWindow):
         #
         # START BUTTON
         #
-        self.enter_button = QPushButton("Enter", central_widget)
+        self.enter_button = QPushButton("> enter expense zone <", central_widget)
         self.enter_button.clicked.connect(self.on_enter)
         button_width = int(self.screen_width * 0.20)
         button_height = int(self.screen_height * 0.10)
@@ -60,20 +69,22 @@ class MainWindow(QMainWindow):
         self.enter_button.setGeometry(button_x, button_y, button_width, button_height)
         self.enter_button.setStyleSheet("""
                 QPushButton {
-                background-color: rgba(255,255,255,0.30);
-                border: 2px solid #333;
-                border-radius: 10px;
+                background-color: rgba(255,255,255,0.00);
+                border: 0px solid #333;
+                border-radius: 0px;
                 font-size: 24px;
                 font-weight: bold;
-                color: #333;
+                color: rgba(32,32,32, 0.5);
                                         }
                 QPushButton:hover {
-                background-color: rgba(255,255,255,255);                                
+                color: rgba(0, 204, 255, 1);                                
                                         } 
                 QPushButton:pressed {
-                background-color: rgba(200,200,200,255)
+                color: rgba(205, 0, 255, 1)
                                         }
                                         """)
+        
+        
     
     def on_enter(self):
         self.show_input_menu()
