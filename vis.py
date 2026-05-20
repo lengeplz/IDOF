@@ -1,8 +1,8 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QLineEdit, QWidget
-from PyQt6.QtGui import QPixmap, QImage
+from PyQt6.QtGui import QPixmap, QImage, QIcon
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
-from PyQt6.QtCore import Qt, QUrl
+from PyQt6.QtCore import Qt, QUrl, QSize
 from PIL import Image, ImageFilter
 
 class MainWindow(QMainWindow):
@@ -12,12 +12,16 @@ class MainWindow(QMainWindow):
         self.music_player = QMediaPlayer()
         self.audio_output = QAudioOutput()
         self.music_player.setAudioOutput(self.audio_output)
+        self.is_fullscreen = False
+        self.is_muted = False
+        
         screen = QApplication.primaryScreen()
         screen_geometry = screen.geometry()
         self.screen_width = int(screen_geometry.width() / 2)
         self.screen_height = int(screen_geometry.height() / 2)
         self.setGeometry(0, 0, self.screen_width, self.screen_height)
-        self.setMinimumSize(400, 300)  # Set minimum size to prevent too small window
+        self.setMinimumSize(400, 300)
+        
         self.music_player.setSource(QUrl.fromLocalFile("meow.mp3"))
         self.music_player.play()
         self.show_enter_menu()
@@ -25,41 +29,81 @@ class MainWindow(QMainWindow):
     def resizeEvent(self, event):
         """Handle window resize events"""
         super().resizeEvent(event)
-        # Update screen dimensions when window is resized
         self.screen_width = self.width()
         self.screen_height = self.height()
-        # Redraw current menu
         if hasattr(self, 'current_menu'):
             if self.current_menu == 'enter':
                 self.show_enter_menu()
             elif self.current_menu == 'input':
                 self.show_input_menu()
 
-    """
-    BEGIN SCREEN!
-    """
-    def show_loading_menu(self):
-        self.current_menu = 'loading'
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
+    def toggle_fullscreen(self):
+        if self.is_fullscreen:
+            self.is_fullscreen = False
+            screen = QApplication.primaryScreen()
+            screen_geometry = screen.geometry()
+            self.screen_width = int(screen_geometry.width() / 2)
+            self.screen_height = int(screen_geometry.height() / 2)
+            self.showNormal()
+            self.move(0, 0)
+            self.resize(self.screen_width, self.screen_height)
+        else:
+            self.is_fullscreen = True
+            self.showFullScreen()
+
+    def toggle_mute(self):
+        """Toggle mute on/off"""
+        if self.is_muted:
+            self.is_muted = False
+            self.audio_output.setVolume(1.0)
+        else:
+            self.is_muted = True
+            self.audio_output.setVolume(0.0)
+
+    def add_control_buttons(self, parent_widget):
+        # MUTE TYPE BEA BUTTON
+        mute_button = HoverButton(parent_widget)
+        mute_button.setIcon(QIcon("speaker.png"))
+        mute_button.clicked.connect(lambda: [self.toggle_mute(), mute_button.set_muted(self.is_muted)])
+        mute_button.setGeometry(10, 10, 50, 50)
+
+        # Store original size
+        mute_button.original_size = QSize(40, 40)
+        mute_button.hover_size = QSize(50, 50)
+
+        # Mouse hover events
+        def on_mute_hover():
+            mute_button.setIconSize(mute_button.hover_size)
+
+        def on_mute_leave():
+            mute_button.setIconSize(mute_button.original_size)
+
+
+        mute_button.enterEvent = lambda e: on_mute_hover()
+        mute_button.leaveEvent = lambda e: on_mute_leave()
+
+        mute_button.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(100,100,100,0.0);
+                border: 0px solid #333;
+                border-radius: 0px;
+            }
+            QPushButton:hover {
+                background-color: rgba(100,100,100,0.2);
+            }
+        """)
 
     def show_enter_menu(self):
-
-        # lame stuff
         self.current_menu = 'enter'
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         
-        #
         blurred_pixmap = self.create_blurred_image("idc.jpg", self.screen_width, self.screen_height)
 
         self.background_label = QLabel(central_widget)
         self.background_label.setPixmap(blurred_pixmap)
         self.background_label.setGeometry(0, 0, self.screen_width, self.screen_height)
 
-        #
-        # START BUTTON
-        #
         self.enter_button = QPushButton("> enter expense zone <", central_widget)
         self.enter_button.clicked.connect(self.on_enter)
         button_width = int(self.screen_width * 0.20)
@@ -84,7 +128,7 @@ class MainWindow(QMainWindow):
                                         }
                                         """)
         
-        
+        self.add_control_buttons(central_widget)
     
     def on_enter(self):
         self.show_input_menu()
@@ -96,7 +140,6 @@ class MainWindow(QMainWindow):
         img = img.resize((width, height))
         blurred = img.filter(ImageFilter.GaussianBlur(radius=0))
         
-        # Convert PIL image to QPixmap
         data = blurred.tobytes("raw", "RGB")
         qimage = QImage(data, width, height, 3 * width, QImage.Format.Format_RGB888)
         return QPixmap.fromImage(qimage)
@@ -108,13 +151,17 @@ class MainWindow(QMainWindow):
         # Create main container
         central_widget = QWidget()
         central_widget.setStyleSheet("background-color: transparent;")
+        
+        # Add blurred background FIRST (before layout)
+        blurred_pixmap = self.create_blurred_image("yay.jpeg", self.screen_width, self.screen_height)
+        background_label = QLabel(central_widget)
+        background_label.setPixmap(blurred_pixmap)
+        background_label.setGeometry(0, 0, self.screen_width, self.screen_height)
+        background_label.lower()  # Send to back
+        
+        # Now add layout on top
         layout = QVBoxLayout(central_widget)
         layout.setContentsMargins(0, 0, 0, 0)
-        
-        # Add blurred background
-        blurred_pixmap = self.create_blurred_image("idc.jpg", self.screen_width, self.screen_height)
-        background_label = QLabel()
-        background_label.setPixmap(blurred_pixmap)
         
         # Create semi-transparent container
         container = QWidget()
@@ -196,6 +243,7 @@ class MainWindow(QMainWindow):
         layout.addStretch()
         
         self.setCentralWidget(central_widget)
+        self.add_control_buttons(central_widget)
 
     def on_submit(self):
         """Handle input submission"""
@@ -203,8 +251,29 @@ class MainWindow(QMainWindow):
         print(f"User entered: {user_input}")
         self.show_enter_menu()
 
-if __name__ == "__main__":#
+class HoverButton(QPushButton):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.original_size = QSize(40, 40)
+        self.hover_size = QSize(50, 50)
+        self.setIconSize(self.original_size)
+    
+    def enterEvent(self, event):
+        self.setIconSize(self.hover_size)
+        super().enterEvent(event)
+    
+    def leaveEvent(self, event):
+        self.setIconSize(self.original_size)
+        super().leaveEvent(event)
+    
+    def set_muted(self, is_muted):
+        if is_muted:
+            self.setIcon(QIcon("speaker_muted.png"))
+        else:
+            self.setIcon(QIcon("speaker.png"))
+
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    sys.exit(app.exec())
+    sys.exit(app.exec()) 
