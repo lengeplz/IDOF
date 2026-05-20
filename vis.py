@@ -11,8 +11,8 @@ class MainWindow(QMainWindow):
         
         screen = QApplication.primaryScreen()
         screen_geometry = screen.geometry()
-        self.screen_width = int(screen_geometry.width() / 4)
-        self.screen_height = int(screen_geometry.height() / 4)
+        self.screen_width = int(screen_geometry.width() / 2)
+        self.screen_height = int(screen_geometry.height() / 2)
         self.setGeometry(0, 0, self.screen_width, self.screen_height)
         self.setMinimumSize(400, 300)  # Set minimum size to prevent too small window
 
@@ -31,17 +31,26 @@ class MainWindow(QMainWindow):
             elif self.current_menu == 'input':
                 self.show_input_menu()
 
+    """
+    BEGIN SCREEN!
+    """
     def show_enter_menu(self):
+
+        # lame stuff
         self.current_menu = 'enter'
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         
-        blurred_pixmap = self.create_blurred_image("lgc.jpg", self.screen_width, self.screen_height)
+        #
+        blurred_pixmap = self.create_blurred_image("idc.jpg", self.screen_width, self.screen_height)
 
         self.background_label = QLabel(central_widget)
         self.background_label.setPixmap(blurred_pixmap)
         self.background_label.setGeometry(0, 0, self.screen_width, self.screen_height)
 
+        #
+        # START BUTTON
+        #
         self.enter_button = QPushButton("Enter", central_widget)
         self.enter_button.clicked.connect(self.on_enter)
         button_width = int(self.screen_width * 0.20)
@@ -74,7 +83,7 @@ class MainWindow(QMainWindow):
         if img.mode != 'RGB':
             img = img.convert('RGB')
         img = img.resize((width, height))
-        blurred = img.filter(ImageFilter.GaussianBlur(radius=10))
+        blurred = img.filter(ImageFilter.GaussianBlur(radius=0))
         
         # Convert PIL image to QPixmap
         data = blurred.tobytes("raw", "RGB")
@@ -92,7 +101,7 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(0, 0, 0, 0)
         
         # Add blurred background
-        blurred_pixmap = self.create_blurred_image("lgc.jpg", self.screen_width, self.screen_height)
+        blurred_pixmap = self.create_blurred_image("idc.jpg", self.screen_width, self.screen_height)
         background_label = QLabel()
         background_label.setPixmap(blurred_pixmap)
         
@@ -183,7 +192,7 @@ class MainWindow(QMainWindow):
         print(f"User entered: {user_input}")
         self.show_enter_menu()
 
-if __name__ == "__main__":
+if __name__ == "__main__":#
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
