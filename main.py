@@ -15,7 +15,6 @@ class Item_Stats:
 
 
 
-
 def main():
     from calc_logic import dim_val_met
     item_dic = {}
@@ -46,7 +45,7 @@ def main():
             
             else:
                 break
-
+            
 
 
 
