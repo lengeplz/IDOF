@@ -15,37 +15,21 @@ class Item_Stats:
 
 
 
-def main():
+def main_call(item_name, asset_worth, aff_life, perc_work, year_bought, days_held):
     from calc_logic import dim_val_met
     item_dic = {}
     data_list = []
     while True:
-        
+        """
         item_name = str(input("\nEnter item name: "))
         asset_worth = float(input("\nEnter Value of item: "))
         aff_life = int(input("\nEnter the lifespan: "))
         perc_work = float(input("\nEnter (%) used for work: "))
         perc_work = perc_work / 100
         year_bought = int(input("\nYear bought: "))
-
-        while True:
-            days_held = int(input("\nHow many days held: "))
-
-            if days_held > 366 and not calendar.isleap(year_bought): 
-                print(f"\nWoahhhh... That's a lot of days in a year :?, Try again. P.S there are {366 if calendar.isleap(year_bought) else 365} days in {year_bought}")
-                continue
-
-            elif days_held == 366 and not calendar.isleap(year_bought):
-                print(f"\n{year_bought} is not a leap year... P.S there are {366 if calendar.isleap(year_bought) else 365} days in {year_bought}")
-                continue
-            
-            elif days_held > 366 and calendar.isleap(year_bought):
-                print(f"\n{year_bought} is not a leap year... P.S there are {366 if calendar.isleap(year_bought) else 365} days in {year_bought}")
-                continue
-            
-            else:
-                break
-            
+        """""
+        perc_work = perc_work / 100
+        
 
 
 
@@ -85,7 +69,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main_call()
 
 
 
