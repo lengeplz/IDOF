@@ -26,8 +26,8 @@ class MainWindow(QMainWindow):
         self.music_player.play()
         self.show_enter_menu()
         
+    # FULKL SCREEEEEEEEEEEEEEEN 😜😜😜😜
     def resizeEvent(self, event):
-        """Handle window resize events"""
         super().resizeEvent(event)
         self.screen_width = self.width()
         self.screen_height = self.height()
@@ -66,23 +66,22 @@ class MainWindow(QMainWindow):
         mute_button.setIcon(QIcon("speaker.png"))
         mute_button.clicked.connect(lambda: [self.toggle_mute(), mute_button.set_muted(self.is_muted)])
         mute_button.setGeometry(10, 10, 50, 50)
-
-        # Store original size
-        mute_button.original_size = QSize(40, 40)
-        mute_button.hover_size = QSize(50, 50)
-
-        # Mouse hover events
-        def on_mute_hover():
-            mute_button.setIconSize(mute_button.hover_size)
-
-        def on_mute_leave():
-            mute_button.setIconSize(mute_button.original_size)
-
-
-        mute_button.enterEvent = lambda e: on_mute_hover()
-        mute_button.leaveEvent = lambda e: on_mute_leave()
-
         mute_button.setStyleSheet("""
+            QPushButton {
+                background-color: rgba(100,100,100,0.0);
+                border: 0px solid #333;
+                border-radius: 0px;
+            }
+            QPushButton:hover {
+                background-color: rgba(100,100,100,0.2);
+            }
+        """)
+
+        fullscreen_button = HoverButton(parent_widget)
+        fullscreen_button.setIcon(QIcon("not_fs.png"))
+        fullscreen_button.clicked.connect(lambda: [self.toggle_fullscreen(), fullscreen_button.set_fullscreen(self.is_fullscreen)])
+        fullscreen_button.setGeometry(self.screen_width - 60, 10, 50, 50)
+        fullscreen_button.setStyleSheet("""
             QPushButton {
                 background-color: rgba(100,100,100,0.0);
                 border: 0px solid #333;
@@ -271,6 +270,12 @@ class HoverButton(QPushButton):
             self.setIcon(QIcon("speaker_muted.png"))
         else:
             self.setIcon(QIcon("speaker.png"))
+    
+    def set_fullscreen(self, is_fullscreen):
+        if is_fullscreen:
+            self.setIcon(QIcon("fs.png"))
+        else:
+            self.setIcon(QIcon("not_fs.png"))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
