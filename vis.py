@@ -8,18 +8,27 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("IDOF")
-        self.setGeometry(100, 100, 1920, 1080)
+        
 
-        screen = QApplication
+        screen = QApplication.primaryScreen()
+        screen_geometry = screen.geometry()
+        self.screen_width = screen_geometry.width()
+        self.screen_height = screen_geometry.height()
+        self.setGeometry(0, 0, self.screen_width, self.screen_height)
 
         blurred_pixmap = self.create_blurred_image("ato.jpg", 1920, 1080)
+
         self.background_label = QLabel(self)
         self.background_label.setPixmap(blurred_pixmap)
         self.background_label.setGeometry(0,0,1920,1080)
 
         self.enter_button = QPushButton("Enter", self)
         self.enter_button.clicked.connect(self.on_enter)
-        self.enter_button.setGeometry(860,720, 150, 50)
+        button_width = int(self.screen_width * 0.05)  # 10% of screen width
+        button_height = int(self.screen_height * 0.025)  # 10% of screen height
+        button_x = (self.screen_width - button_width) // 2  # Center horizontally
+        button_y = (self.screen_height - button_height) // 2 + int(self.screen_height * 0.1)  # Center vertically
+        self.enter_button.setGeometry(button_x, button_y, button_width, button_height)
         self.enter_button.setStyleSheet("""
                 QPushButton {
                 background-color: rgba(255,255,255,200);
